@@ -28,10 +28,6 @@ var _inherits2 = require('babel-runtime/helpers/inherits');
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _chart = require('chart.js');
-
-var _chart2 = _interopRequireDefault(_chart);
-
 var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -40,10 +36,14 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactChartjs = require('react-chartjs-2');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _jsxFileName = 'C:\\Users\\phapp\\Desktop\\projects\\chart-stocks\\components\\StockChart.js';
 
+
+var pointStyles = ['rect', 'circle', 'triangle', 'rectRounded', 'crossRot', 'rectRot'];
 
 var randomHexColor = function randomHexColor() {
   var chars = '0123456789abcdef'.split('');
@@ -57,65 +57,111 @@ var randomHexColor = function randomHexColor() {
 var StockChart = function (_React$Component) {
   (0, _inherits3.default)(StockChart, _React$Component);
 
-  function StockChart() {
+  function StockChart(props) {
     (0, _classCallCheck3.default)(this, StockChart);
 
-    return (0, _possibleConstructorReturn3.default)(this, (StockChart.__proto__ || (0, _getPrototypeOf2.default)(StockChart)).apply(this, arguments));
+    var _this = (0, _possibleConstructorReturn3.default)(this, (StockChart.__proto__ || (0, _getPrototypeOf2.default)(StockChart)).call(this, props));
+
+    var dates = (0, _keys2.default)(_this.props.stocks[0].data).reverse();
+    var data = { labels: dates, datasets: [] };
+    var options = {
+      legend: { display: false },
+      title: { display: true, fontSize: 18, text: 'STOCKS' },
+      tooltips: { intersect: false, mode: 'index', position: 'nearest' }
+    };
+    _this.props.stocks.forEach(function (stock) {
+      var closingData = [];
+      var color = randomHexColor();
+      dates.forEach(function (date) {
+        closingData.push(stock.data[date]['4. close']);
+      });
+      data.datasets.push({
+        label: stock.symbol,
+        data: closingData,
+        fill: false,
+        borderColor: color,
+        backgroundColor: color,
+        pointStyle: pointStyles[Math.floor(Math.random() * pointStyles.length)]
+      });
+    });
+    _this.state = { data: data, options: options };
+    return _this;
   }
 
   (0, _createClass3.default)(StockChart, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.drawChart();
-    }
-  }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps) {
-      if (this.props.stocks.length !== prevProps.stocks.length) {
-        this.drawChart();
+      var _this2 = this;
+
+      if (this.props.stocks.length > prevProps.stocks.length) {
+        var stockToAdd = this.props.stocks[this.props.stocks.length - 1];
+        this.addStockData(stockToAdd);
+      }
+      if (this.props.stocks.length < prevProps.stocks.length) {
+        var stockToRemove = prevProps.stocks.find(function (stock) {
+          return !_this2.props.stocks.includes(stock);
+        });
+        this.removeStockData(stockToRemove);
       }
     }
   }, {
-    key: 'drawChart',
-    value: function drawChart() {
-      var dates = (0, _keys2.default)(this.props.stocks[0].data).reverse();
-      var data = { labels: dates, datasets: [] };
-      var options = {
-        legend: { display: false },
-        title: { display: true, fontSize: 18, text: 'STOCKS' },
-        tooltips: { intersect: false, mode: 'index', position: 'nearest' }
-      };
-
-      var pointStyles = ['circle', 'crossRot', 'rect', 'rectRounded', 'rectRot', 'triangle'];
-      this.props.stocks.forEach(function (stock) {
-        var closingData = [];
-        var color = randomHexColor();
-        dates.forEach(function (date) {
-          closingData.push(stock.data[date]['4. close']);
-        });
-        data.datasets.push({
-          label: stock.symbol,
-          data: closingData,
-          fill: false,
-          borderColor: color,
-          backgroundColor: color,
-          pointStyle: pointStyles[Math.floor(Math.random() * pointStyles.length)]
-        });
+    key: 'addStockData',
+    value: function addStockData(stock) {
+      var dates = (0, _keys2.default)(stock.data).reverse();
+      var closingData = [];
+      var color = randomHexColor();
+      dates.forEach(function (date) {
+        closingData.push(stock.data[date]['4. close']);
       });
-      var ctx = this.canvas.getContext('2d');
-      // eslint-disable-next-line no-unused-vars
-      var chart = new _chart2.default(ctx, { type: 'line', data: data, options: options });
+
+      this.setState(function (prevState) {
+        var _prevState$data = prevState.data,
+            datasets = _prevState$data.datasets,
+            labels = _prevState$data.labels;
+
+        return {
+          data: {
+            labels: labels,
+            datasets: datasets.concat({
+              label: stock.symbol,
+              data: closingData,
+              fill: false,
+              borderColor: color,
+              backgroundColor: color,
+              pointStyle: pointStyles[Math.floor(Math.random() * pointStyles.length)]
+            })
+          }
+        };
+      });
+    }
+  }, {
+    key: 'removeStockData',
+    value: function removeStockData(stock) {
+      this.setState(function (prevState) {
+        var _prevState$data2 = prevState.data,
+            datasets = _prevState$data2.datasets,
+            labels = _prevState$data2.labels;
+
+        return {
+          data: {
+            labels: labels,
+            datasets: datasets.filter(function (dataset) {
+              return dataset.label !== stock.symbol;
+            })
+          }
+        };
+      });
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _state = this.state,
+          data = _state.data,
+          options = _state.options;
 
-      return _react2.default.createElement('canvas', { ref: function ref(canvas) {
-          _this2.canvas = canvas;
-        }, __source: {
+      return _react2.default.createElement(_reactChartjs.Line, { data: data, options: options, __source: {
           fileName: _jsxFileName,
-          lineNumber: 56
+          lineNumber: 95
         }
       });
     }

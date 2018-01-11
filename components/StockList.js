@@ -4,7 +4,7 @@ import React from 'react';
 const StockList = props => (
   <ul>
     {props.stocks.map(stock => (
-      <li key={stock._id}>
+      <li key={stock.symbol}>
         {stock.symbol}
         <i className="fa fa-times-circle" onClick={props.removeStock} />
       </li>

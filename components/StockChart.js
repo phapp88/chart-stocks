@@ -1,6 +1,8 @@
-import Chart from 'chart.js';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Line } from 'react-chartjs-2';
+
+const pointStyles = ['rect', 'circle', 'triangle', 'rectRounded', 'crossRot', 'rectRot'];
 
 const randomHexColor = () => {
   const chars = '0123456789abcdef'.split('');
@@ -12,17 +14,8 @@ const randomHexColor = () => {
 };
 
 class StockChart extends React.Component {
-  componentDidMount() {
-    this.drawChart();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.stocks.length !== prevProps.stocks.length) {
-      this.drawChart();
-    }
-  }
-
-  drawChart() {
+  constructor(props) {
+    super(props);
     const dates = Object.keys(this.props.stocks[0].data).reverse();
     const data = { labels: dates, datasets: [] };
     const options = {
@@ -30,8 +23,6 @@ class StockChart extends React.Component {
       title: { display: true, fontSize: 18, text: 'STOCKS' },
       tooltips: { intersect: false, mode: 'index', position: 'nearest' },
     };
-
-    const pointStyles = ['circle', 'crossRot', 'rect', 'rectRounded', 'rectRot', 'triangle'];
     this.props.stocks.forEach((stock) => {
       const closingData = [];
       const color = randomHexColor();
@@ -47,13 +38,61 @@ class StockChart extends React.Component {
         pointStyle: pointStyles[Math.floor(Math.random() * pointStyles.length)],
       });
     });
-    const ctx = this.canvas.getContext('2d');
-    // eslint-disable-next-line no-unused-vars
-    const chart = new Chart(ctx, { type: 'line', data, options });
+    this.state = { data, options };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.stocks.length > prevProps.stocks.length) {
+      const stockToAdd = this.props.stocks[this.props.stocks.length - 1];
+      this.addStockData(stockToAdd);
+    }
+    if (this.props.stocks.length < prevProps.stocks.length) {
+      const stockToRemove = prevProps.stocks.find(stock => !this.props.stocks.includes(stock));
+      this.removeStockData(stockToRemove);
+    }
+  }
+
+  addStockData(stock) {
+    const dates = Object.keys(stock.data).reverse();
+    const closingData = [];
+    const color = randomHexColor();
+    dates.forEach((date) => {
+      closingData.push(stock.data[date]['4. close']);
+    });
+
+    this.setState((prevState) => {
+      const { datasets, labels } = prevState.data;
+      return {
+        data: {
+          labels,
+          datasets: datasets.concat({
+            label: stock.symbol,
+            data: closingData,
+            fill: false,
+            borderColor: color,
+            backgroundColor: color,
+            pointStyle: pointStyles[Math.floor(Math.random() * pointStyles.length)],
+          }),
+        },
+      };
+    });
+  }
+
+  removeStockData(stock) {
+    this.setState((prevState) => {
+      const { datasets, labels } = prevState.data;
+      return {
+        data: {
+          labels,
+          datasets: datasets.filter(dataset => dataset.label !== stock.symbol),
+        },
+      };
+    });
   }
 
   render() {
-    return <canvas ref={(canvas) => { this.canvas = canvas; }} />;
+    const { data, options } = this.state;
+    return <Line data={data} options={options} />;
   }
 }
 
