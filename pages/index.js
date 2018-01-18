@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Layout from '../components/Layout';
 
-
-const Index = props => (
+const Index = ({ stocks }) => (
   <div>
     <Head>
       <title>Chart Stocks</title>
@@ -18,11 +17,12 @@ const Index = props => (
       />
       <style>{`
         body {
+          color: rgba(0, 0, 0, 0.87);
           font-family: Roboto, "Noto Sans", sans-serif;
         }
       `}</style>
     </Head>
-    <Layout stocks={props.stocks} />
+    <Layout stocks={stocks} />
   </div>
 );
 
@@ -33,7 +33,14 @@ Index.getInitialProps = async () => {
 };
 
 Index.propTypes = {
-  stocks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  stocks: PropTypes.arrayOf(PropTypes.shape({
+    data: PropTypes.arrayOf(PropTypes.shape({
+      date: PropTypes.string,
+      close: PropTypes.number,
+    })),
+    name: PropTypes.string,
+    symbol: PropTypes.string,
+  })).isRequired,
 };
 
 export default Index;

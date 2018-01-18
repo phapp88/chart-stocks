@@ -2,16 +2,19 @@ import io from 'socket.io-client';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import StockChart from '../components/StockChart';
-import StockForm from '../components/StockForm';
-import StockList from '../components/StockList';
+import RangeSelector from './RangeSelector';
+import StockChart from './StockChart';
+import StockForm from './StockForm';
+import Stock from './Stock';
 
 class Layout extends React.Component {
   constructor(props) {
     super(props);
+    const stocks = this.props.stocks;
     this.state = {
+      chartRange: '1M',
       errorMsg: '',
-      stocks: this.props.stocks,
+      stocks,
       textField: '',
     };
     this.addStock = this.addStock.bind(this);
@@ -20,6 +23,7 @@ class Layout extends React.Component {
     this.handleRemoval = this.handleRemoval.bind(this);
     this.handleStock = this.handleStock.bind(this);
     this.removeStock = this.removeStock.bind(this);
+    this.setChartRange = this.setChartRange.bind(this);
   }
 
   componentDidMount() {
@@ -36,6 +40,10 @@ class Layout extends React.Component {
     this.socket.close();
   }
 
+  setChartRange(event) {
+    this.setState({ chartRange: event.target.textContent });
+  }
+
   addStock(event) {
     event.preventDefault();
     const { stocks, textField } = this.state;
@@ -43,6 +51,9 @@ class Layout extends React.Component {
     const chartingStock = stocks.some(stock => stock.symbol === symbolToAdd);
     if (!chartingStock) {
       this.socket.emit('symbolToAdd', symbolToAdd);
+    }
+    if (colors.length === stocks.length) {
+      colors.push(randomHexColor());
     }
   }
 
@@ -65,30 +76,65 @@ class Layout extends React.Component {
   }
 
   removeStock(event) {
-    const symbolToRemove = event.target.parentNode.textContent;
+    const symbolToRemove = event.target.parentNode.textContent.split('-')[0].slice(0, -1);
     const nextStocks = this.state.stocks.filter(stock => stock.symbol !== symbolToRemove);
     this.setState({ stocks: nextStocks });
     this.socket.emit('symbolToRemove', symbolToRemove);
   }
 
   render() {
+    const { chartRange, errorMsg, stocks, textField } = this.state;
+    const stockList = stocks.map(stock => (
+      <Stock
+        key={stock.symbol}
+        removeStock={this.removeStock}
+        stock={stock}
+      />
+    ));
+
     return (
       <div>
-        <StockChart stocks={this.state.stocks} />
-        <StockList removeStock={this.removeStock} stocks={this.state.stocks} />
+        <h3>STOCKS</h3>
+        <RangeSelector chartRange={chartRange} setChartRange={this.setChartRange} />
+        <StockChart chartRange={chartRange} stocks={stocks} />
+        <ul>{stockList}</ul>
         <StockForm
           addStock={this.addStock}
+          errorMsg={errorMsg}
           handleChange={this.handleChange}
-          textField={this.state.textField}
+          textField={textField}
         />
-        <p>{this.state.errorMsg}</p>
+        <footer>
+          Data provided for free by&nbsp;
+          <a href="https://iextrading.com/developer/" target="_blank">
+            IEX
+          </a>
+          .
+        </footer>
+        <style jsx>{`
+          h3 {
+            margin-bottom: 0;
+            text-align: center;
+          }
+          footer {
+            position: relative;
+            text-align: center;
+          }
+        `}</style>
       </div>
     );
   }
 }
 
 Layout.propTypes = {
-  stocks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  stocks: PropTypes.arrayOf(PropTypes.shape({
+    data: PropTypes.arrayOf(PropTypes.shape({
+      date: PropTypes.string,
+      close: PropTypes.number,
+    })),
+    name: PropTypes.string,
+    symbol: PropTypes.string,
+  })).isRequired,
 };
 
 export default Layout;

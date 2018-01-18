@@ -20,28 +20,46 @@ const mongoConnect = () => {
   return dbConnection;
 };
 
-async function getPriceData(stock) {
-  const res = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${stock.symbol}&interval=1min&apikey=${process.env.APIKEY}`);
-  const json = await res.json();
-  const data = json[Object.keys(json)[1]];
-  return { ...stock, data };
+const randomHexColor = () => {
+  const chars = '0123456789abcdef'.split('');
+  let hex = '#';
+  for (let i = 0; i < 6; i++) {
+    hex += chars[Math.floor(Math.random() * 16)];
+  }
+  return hex;
+};
+
+async function getPriceData(stocks) {
+  const stockSymbols = stocks.map(stock => stock.symbol).join(',');
+  try {
+    const res = await fetch(`https://api.iextrading.com/1.0/stock/market/batch?symbols=${stockSymbols}&types=chart,company&range=2y&filter=close,companyName,date`);
+    const json = await res.json();
+    const stocksWithData = stocks.map((stock) => {
+      const { chart: data, company: { companyName: name } } = json[stock.symbol];
+      return { ...stock, data, name };
+    });
+    return stocksWithData;
+  } catch (err) {
+    throw err;
+  }
 }
 
 (async function webSocket() {
-  const db = await mongoConnect();
+  const dbConnection = await mongoConnect();
   io.on('connection', (socket) => {
     socket.on('symbolToAdd', async (symbol) => {
-      const stockWithData = await getPriceData({ symbol });
-      if (stockWithData.data) {
-        io.emit('stock', stockWithData);
-        db.collection('stocks').insertOne({ symbol });
-      } else {
+      try {
+        const color = randomHexColor();
+        const stockWithData = await getPriceData([{ color, symbol }]);
+        io.emit('stock', ...stockWithData);
+        dbConnection.db('stocks').collection('stocks').insertOne({ color, symbol });
+      } catch (err) {
         socket.emit('errorMsg', 'Symbol does not exist');
       }
     });
 
     socket.on('symbolToRemove', (symbol) => {
-      db.collection('stocks').deleteOne({ symbol });
+      dbConnection.db('stocks').collection('stocks').deleteOne({ symbol });
       io.emit('stockToRemove', symbol);
     });
   });
@@ -51,9 +69,9 @@ const wrap = fn => (...args) => fn(...args).catch(args[2]);
 
 nextApp.prepare().then(() => {
   app.get('/stocks', wrap(async (req, res) => {
-    const db = await mongoConnect();
-    const stocks = await db.collection('stocks').find().toArray();
-    const stocksWithData = await Promise.all(stocks.map(getPriceData));
+    const dbConnection = await mongoConnect();
+    const stocks = await dbConnection.db('stocks').collection('stocks').find().toArray();
+    const stocksWithData = await getPriceData(stocks);
     res.send(stocksWithData);
   }));
   app.get('*', nextHandler);
