@@ -11,13 +11,13 @@ const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const nextHandler = nextApp.getRequestHandler();
 
-let dbConnection;
+let mongoConnection;
 
 const mongoConnect = () => {
-  if (!dbConnection) {
-    dbConnection = mongodb.connect(process.env.MLAB);
+  if (!mongoConnection) {
+    mongoConnection = mongodb.connect(process.env.MLAB);
   }
-  return dbConnection;
+  return mongoConnection;
 };
 
 const randomHexColor = () => {

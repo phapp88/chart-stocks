@@ -10,9 +10,9 @@ import Stock from './Stock';
 class Layout extends React.Component {
   constructor(props) {
     super(props);
-    const stocks = this.props.stocks;
+    const { stocks } = this.props;
     this.state = {
-      chartRange: '1M',
+      chartRange: '1 Mo',
       errorMsg: '',
       stocks,
       textField: '',
@@ -52,9 +52,6 @@ class Layout extends React.Component {
     if (!chartingStock) {
       this.socket.emit('symbolToAdd', symbolToAdd);
     }
-    if (colors.length === stocks.length) {
-      colors.push(randomHexColor());
-    }
   }
 
   handleChange(event) {
@@ -93,7 +90,7 @@ class Layout extends React.Component {
     ));
 
     return (
-      <div>
+      <main>
         <h3>STOCKS</h3>
         <RangeSelector chartRange={chartRange} setChartRange={this.setChartRange} />
         <StockChart chartRange={chartRange} stocks={stocks} />
@@ -106,12 +103,20 @@ class Layout extends React.Component {
         />
         <footer>
           Data provided for free by&nbsp;
-          <a href="https://iextrading.com/developer/" target="_blank">
+          <a
+            href="https://iextrading.com/developer/"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             IEX
           </a>
           .
         </footer>
         <style jsx>{`
+          main {
+            margin: auto;
+            max-width: 800px;
+          }
           h3 {
             margin-bottom: 0;
             text-align: center;
@@ -120,8 +125,9 @@ class Layout extends React.Component {
             position: relative;
             text-align: center;
           }
-        `}</style>
-      </div>
+        `}
+        </style>
+      </main>
     );
   }
 }

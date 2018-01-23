@@ -4,25 +4,35 @@ import React from 'react';
 const RangeSelector = ({ chartRange, setChartRange }) => (
   <div>
     <button
-      className={chartRange === '1M' ? 'active' : ''}
+      className={chartRange === '1 Mo' ? 'active' : ''}
       onClick={setChartRange}
-    >1M</button>
-    <button 
-      className={chartRange === '3M' ? 'active' : ''}
+    >
+    1 Mo
+    </button>
+    <button
+      className={chartRange === '3 Mo' ? 'active' : ''}
       onClick={setChartRange}
-    >3M</button>
-    <button 
-      className={chartRange === '6M' ? 'active' : ''}
+    >
+    3 Mo
+    </button>
+    <button
+      className={chartRange === '6 Mo' ? 'active' : ''}
       onClick={setChartRange}
-    >6M</button>
-    <button 
+    >
+    6 Mo
+    </button>
+    <button
       className={chartRange === 'YTD' ? 'active' : ''}
       onClick={setChartRange}
-    >YTD</button>
-    <button 
-      className={chartRange === '1Y' ? 'active' : ''}
+    >
+    YTD
+    </button>
+    <button
+      className={chartRange === '1 Yr' ? 'active' : ''}
       onClick={setChartRange}
-    >1Y</button>
+    >
+    1 Yr
+    </button>
     <style jsx>{`
       div {
         margin: 0 0 8px 36px;
@@ -47,7 +57,18 @@ const RangeSelector = ({ chartRange, setChartRange }) => (
         color: white;
         outline: 0;
       }
-    `}</style>
+      @media (max-width: 340px) {
+        button:nth-child(3) {
+          margin-right: 21%;
+        }
+      }
+      @media (max-width: 300px) {
+        button:nth-child(3) {
+          margin-right: 15%;
+        }
+      }
+    `}
+    </style>
   </div>
 );
 

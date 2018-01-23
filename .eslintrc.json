@@ -3,6 +3,7 @@
     "rules": {
       "no-underscore-dangle": "off",
       "react/jsx-filename-extension": "off",
-      "no-plusplus": "off"
+      "no-plusplus": "off",
+      "object-curly-newline": "off"
     }
 }

@@ -47,11 +47,17 @@ const StockForm = ({ addStock, errorMsg, handleChange, textField }) => (
       }
       p {
         color: #ff5252;
-        margin-top: 8px;
+        margin-top: 6px;
         text-align: center;
         width: 200px;
       }
-    `}</style>
+      @media (max-width: 350px) {
+        input {
+          width: 60%;
+        }
+      }
+    `}
+    </style>
   </form>
 );
 

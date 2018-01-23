@@ -20,14 +20,17 @@ const Index = ({ stocks }) => (
           color: rgba(0, 0, 0, 0.87);
           font-family: Roboto, "Noto Sans", sans-serif;
         }
-      `}</style>
+      `}
+      </style>
     </Head>
     <Layout stocks={stocks} />
   </div>
 );
 
-Index.getInitialProps = async () => {
-  const res = await fetch('http://localhost:3000/stocks');
+Index.getInitialProps = async ({ req }) => {
+  const protocol = req.headers['x-forwarded-proto'] || 'http';
+  const baseUrl = `${protocol}://${req.headers.host}`;
+  const res = await fetch(`${baseUrl}/stocks`);
   const stocks = await res.json();
   return { stocks };
 };
