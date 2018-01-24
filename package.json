@@ -5,7 +5,7 @@
   "main": "server.js",
   "engines": {
     "node": "8.3.0",
-  }
+  },
   "scripts": {
     "dev": "nodemon -w server.js server.js"
   },
