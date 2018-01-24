@@ -7,7 +7,10 @@
     "node": "8.3.0"
   },
   "scripts": {
-    "dev": "nodemon -w server.js server.js"
+    "dev": "nodemon -w server.js server.js",
+    "build": "next build",
+    "start": "next start",
+    "heroku-postbuild": "npm run build"
   },
   "keywords": [],
   "author": "",
