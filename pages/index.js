@@ -28,11 +28,12 @@ const Index = ({ stocks }) => (
 );
 
 Index.getInitialProps = async ({ req }) => {
-  const protocol = req.headers['x-forwarded-proto'] || 'http';
-  const baseUrl = `${protocol}://${req.headers.host}`;
-  const res = await fetch(`${baseUrl}/stocks`);
-  const stocks = await res.json();
-  return { stocks };
+  //const protocol = req.headers['x-forwarded-proto'] || 'http';
+  //const baseUrl = `${protocol}://${req.headers.host}`;
+  //const res = await fetch(`${baseUrl}/stocks`);
+  //const stocks = await res.json();
+  // return { stocks };
+  return {};
 };
 
 Index.propTypes = {
