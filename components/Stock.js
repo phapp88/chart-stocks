@@ -35,7 +35,8 @@ const Stock = ({ removeStock, stock }) => {
         i:hover {
           color: ${color};
         }
-      `}</style>
+      `}
+      </style>
     </li>
   );
 };
