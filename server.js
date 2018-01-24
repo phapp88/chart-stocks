@@ -69,9 +69,11 @@ const wrap = fn => (...args) => fn(...args).catch(args[2]);
 
 nextApp.prepare().then(() => {
   app.get('/stocks', wrap(async (req, res) => {
+    console.log('stocks');
     const dbConnection = await mongoConnect();
     const stocks = await dbConnection.db('stocks').collection('stocks').find().toArray();
     const stocksWithData = await getPriceData(stocks);
+    console.log('stocksWithData', stocksWithData);
     res.send(stocksWithData);
   }));
   app.get('*', nextHandler);
