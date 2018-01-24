@@ -32,10 +32,8 @@ Index.getInitialProps = async ({ req }) => {
     const protocol = req.headers['x-forwarded-proto'] || 'http';
     const baseUrl = `${protocol}://${req.headers.host}`;
     const res = await fetch(`${baseUrl}/stocks`);
-    console.log(res);
     const stocks = await res.json();
-    console.log(stocks);
-    return { stocks: [] };
+    return { stocks };
   } catch (err) {
     console.log(err);
     return { stocks: [] };
