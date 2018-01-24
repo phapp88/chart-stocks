@@ -31,7 +31,7 @@ Index.getInitialProps = async ({ req }) => {
   const protocol = req.headers['x-forwarded-proto'] || 'http';
   const baseUrl = `${protocol}://${req.headers.host}`;
   console.log(baseUrl);
-  const res = await fetch(`${baseUrl}/stocks`);
+  const res = await fetch('https://chart-stocks1.herokuapp.com/stocks');
   const stocks = await res.json();
   return { stocks };
 };
