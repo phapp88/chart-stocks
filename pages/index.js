@@ -30,6 +30,7 @@ const Index = ({ stocks }) => (
 Index.getInitialProps = async ({ req }) => {
   const protocol = req.headers['x-forwarded-proto'] || 'http';
   const baseUrl = `${protocol}://${req.headers.host}`;
+  console.log(baseUrl);
   const res = await fetch(`${baseUrl}/stocks`);
   const stocks = await res.json();
   return { stocks };
