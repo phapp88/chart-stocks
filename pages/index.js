@@ -33,9 +33,9 @@ Index.getInitialProps = async ({ req }) => {
   console.log('protocol', protocol);
   const baseUrl = `${protocol}://${req.headers.host}`;
   console.log('baseUrl', baseUrl);
-  const res = await fetch(`${baseUrl}/stocks`);
-  const stocks = await res.json();
-  return { stocks };
+  //const res = await fetch(`${baseUrl}/stocks`);
+  //const stocks = await res.json();
+  return { stocks: [] };
 };
 
 Index.propTypes = {
