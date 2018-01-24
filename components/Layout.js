@@ -27,7 +27,7 @@ class Layout extends React.Component {
   }
 
   componentDidMount() {
-    this.socket = io();
+    this.socket = io('https://chart-stocks1.herokuapp.com/');
     this.socket.on('errorMsg', this.handleErrorMsg);
     this.socket.on('stock', this.handleStock);
     this.socket.on('stockToRemove', this.handleRemoval);
