@@ -1,6 +1,4 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+require('dotenv').config();
 const app = require('express')();
 const fetch = require('isomorphic-fetch');
 const mongodb = require('mongodb').MongoClient;
