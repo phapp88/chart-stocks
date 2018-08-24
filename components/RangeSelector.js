@@ -35,6 +35,7 @@ const RangeSelector = ({ chartRange, setChartRange }) => (
     </button>
     <style jsx>{`
       div {
+        
         margin: 0 0 8px 36px;
       }
       button {
@@ -56,16 +57,6 @@ const RangeSelector = ({ chartRange, setChartRange }) => (
         border: none;
         color: white;
         outline: 0;
-      }
-      @media (max-width: 340px) {
-        button:nth-child(3) {
-          margin-right: 21%;
-        }
-      }
-      @media (max-width: 300px) {
-        button:nth-child(3) {
-          margin-right: 15%;
-        }
       }
     `}
     </style>

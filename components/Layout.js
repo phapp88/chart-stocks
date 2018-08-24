@@ -114,7 +114,7 @@ class Layout extends React.Component {
         </footer>
         <style jsx>{`
           main {
-            margin: auto;
+            margin: 20px auto;
             max-width: 800px;
           }
           h3 {

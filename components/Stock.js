@@ -5,7 +5,7 @@ const Stock = ({ removeStock, stock }) => {
   const { color, name, symbol } = stock;
   return (
     <li>
-      {symbol} - {name}
+      {symbol}<span> - {name}</span>
       <i
         className="fa fa-times-circle"
         onClick={removeStock}
@@ -16,8 +16,9 @@ const Stock = ({ removeStock, stock }) => {
         li {
           background-color: #cfcfcf;
           border-radius: 24px;
+          font-size: 15px;
           margin: 0 3px 10px 3px;
-          padding: 8px 16px;
+          padding: 6px 12px;
           height: 32px;
           line-height: 32px;
           display: inline-block;
@@ -27,13 +28,18 @@ const Stock = ({ removeStock, stock }) => {
         }
         i {
           cursor: pointer;
-          font-size: 18px;
+          font-size: 17px;
           margin-left: 3px;
           position: relative;
           top: 1px;
         }
         i:hover {
           color: ${color};
+        }
+        @media (max-width: 500px) {
+          span {
+            display: none;
+          }
         }
       `}
       </style>
