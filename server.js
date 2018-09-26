@@ -1,6 +1,7 @@
 require('dotenv').config();
 const app = require('express')();
 const fetch = require('isomorphic-fetch');
+const helmet = require('helmet');
 const mongodb = require('mongodb').MongoClient;
 const next = require('next');
 
@@ -10,6 +11,8 @@ const io = require('socket.io')(server);
 const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
 const nextHandler = nextApp.getRequestHandler();
+
+app.use(helmet());
 
 let mongoConnection;
 
