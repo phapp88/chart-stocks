@@ -48,8 +48,8 @@ class Layout extends React.Component {
     event.preventDefault();
     const { stocks, textField } = this.state;
     const symbolToAdd = textField.toUpperCase();
-    const chartingStock = stocks.some(stock => stock.symbol === symbolToAdd);
-    if (!chartingStock) {
+    const stockIsOnTheChart = stocks.some(stock => stock.symbol === symbolToAdd);
+    if (!stockIsOnTheChart) {
       this.socket.emit('symbolToAdd', symbolToAdd);
     }
   }
