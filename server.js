@@ -18,7 +18,7 @@ let mongoConnection;
 
 const mongoConnect = () => {
   if (!mongoConnection) {
-    mongoConnection = mongodb.connect(process.env.MLAB);
+    mongoConnection = mongodb.connect(process.env.MLAB, { useNewUrlParser: true });
   }
   return mongoConnection;
 };
