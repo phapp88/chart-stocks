@@ -1,4 +1,3 @@
-import fetch from 'isomorphic-fetch';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
 import React from 'react';
