@@ -1,11 +1,8 @@
 {
-  "extends": "airbnb",
+  "extends": ["airbnb", "prettier"],
   "rules": {
-    "indent": "off",
     "no-underscore-dangle": "off",
     "no-plusplus": "off",
-    "object-curly-newline": "off",
-    "operator-linebreak": "off",
     "react/jsx-filename-extension": "off",
     "react/jsx-indent": "off",
     "react/jsx-one-expression-per-line": "off"
