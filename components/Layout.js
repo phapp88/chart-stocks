@@ -110,7 +110,7 @@ class Layout extends React.Component {
           textField={textField}
         />
         <footer>
-          Sandbox data provided for free by&nbsp;
+          Data provided for free by&nbsp;
           <a
             href="https://iexcloud.io"
             rel="noopener noreferrer"

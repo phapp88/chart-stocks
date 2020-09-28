@@ -37,9 +37,14 @@ const randomHexColor = () => {
 
 async function getPriceData(stocks) {
   const stockSymbols = stocks.map((stock) => stock.symbol).join(',');
-  const res = await fetch(
-    `https://sandbox.iexapis.com/stable/stock/market/batch?symbols=${stockSymbols}&types=chart,company&range=2y&filter=close,companyName,date&token=${process.env.IEX_TOKEN}`,
+  let res = await fetch(
+    `https://cloud.iexapis.com/stable/stock/market/batch?symbols=${stockSymbols}&types=chart,company&range=2y&filter=close,companyName,date&token=${process.env.IEX_CLOUD_TOKEN}`,
   );
+  if (res.status === 402) {
+    res = await fetch(
+      `https://sandbox.iexapis.com/stable/stock/market/batch?symbols=${stockSymbols}&types=chart,company&range=2y&filter=close,companyName,date&token=${process.env.IEX_SANDBOX_TOKEN}`,
+    );
+  }
   const json = await res.json();
   const stocksWithData = stocks.map((stock) => {
     const {
