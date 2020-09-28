@@ -52,7 +52,10 @@ class StockChart extends React.Component {
         const { color, data: stockData, symbol } = stock;
         return {
           label: symbol,
-          data: stockData.map(obj => ({ x: moment(obj.date, 'YYYY-MM-DD'), y: obj.close })),
+          data: stockData.map((obj) => ({
+            x: moment(obj.date, 'YYYY-MM-DD'),
+            y: obj.close,
+          })),
           fill: false,
           borderColor: color,
           backgroundColor: color,
@@ -63,14 +66,16 @@ class StockChart extends React.Component {
 
     const options = {
       annotation: {
-        annotations: [{
-          borderColor: tooltipOpacity === 0 ? 'rgba(0, 0, 0, 0)' : '#9e9e9e',
-          borderWidth: 2,
-          type: 'line',
-          mode: 'vertical',
-          scaleID: 'x-axis-0',
-          value: date,
-        }],
+        annotations: [
+          {
+            borderColor: tooltipOpacity === 0 ? 'rgba(0, 0, 0, 0)' : '#9e9e9e',
+            borderWidth: 2,
+            type: 'line',
+            mode: 'vertical',
+            scaleID: 'x-axis-0',
+            value: date,
+          },
+        ],
       },
       onHover: (event) => {
         if (event.type === 'mousemove') {
@@ -82,31 +87,35 @@ class StockChart extends React.Component {
       maintainAspectRatio: false,
       legend: { display: false },
       scales: {
-        xAxes: [{
-          distribution: 'series',
-          gridLines: { drawOnChartArea: false },
-          ticks: { display: true, minRotation: 45 },
-          time: {
-            min: startDate,
-            unit: timeUnit,
-            displayFormats: {
-              day: 'MMM D',
-              week: 'MMM D',
+        xAxes: [
+          {
+            distribution: 'series',
+            gridLines: { drawOnChartArea: false },
+            ticks: { display: true, minRotation: 45 },
+            time: {
+              min: startDate,
+              unit: timeUnit,
+              displayFormats: {
+                day: 'MMM D',
+                week: 'MMM D',
+              },
+              tooltipFormat: 'dddd, MMM D, YYYY',
             },
-            tooltipFormat: 'dddd, MMM D, YYYY',
+            type: 'time',
           },
-          type: 'time',
-        }],
-        yAxes: [{
-          scaleLabel: {
-            display: true,
-            labelString: 'Closing Price (USD)',
+        ],
+        yAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: 'Closing Price (USD)',
+            },
+            ticks: {
+              beginAtZero: stocks.length === 0,
+              suggestedMax: 50,
+            },
           },
-          ticks: {
-            beginAtZero: stocks.length === 0,
-            suggestedMax: 50,
-          },
-        }],
+        ],
       },
       tooltips: {
         enabled: false,
@@ -118,18 +127,31 @@ class StockChart extends React.Component {
             return;
           }
           const mouseDate = tooltip.dataPoints[0].xLabel;
-          const points = tooltip.dataPoints.map(point => ({ x: point.x, y: point.y }));
-          this.setState({ dataPoints: points, date: mouseDate, tooltipOpacity: 1 });
+          const points = tooltip.dataPoints.map((point) => ({
+            x: point.x,
+            y: point.y,
+          }));
+          this.setState({
+            dataPoints: points,
+            date: mouseDate,
+            tooltipOpacity: 1,
+          });
         },
       },
     };
 
     const mouseDateMoment = moment(date, 'dddd, MMM D, YYYY');
-    const showDataPoints = tooltipOpacity === 1 && startDate.isBefore(mouseDateMoment);
+    const showDataPoints =
+      tooltipOpacity === 1 && startDate.isBefore(mouseDateMoment);
 
     const DataPoints = showDataPoints
-      ? stocks.map((stock, i) =>
-        <DataPoint key={stock.symbol} color={stock.color} pos={dataPoints[i]} />)
+      ? stocks.map((stock, i) => (
+          <DataPoint
+            key={stock.symbol}
+            color={stock.color}
+            pos={dataPoints[i]}
+          />
+        ))
       : null;
 
     return (
@@ -146,15 +168,16 @@ class StockChart extends React.Component {
           stocks={stocks}
         />
         {DataPoints}
-        <style jsx>{`
-          .chart-container {
-            height: 400px;
-            position: relative;
-          }
-          div {
-            position: relative;
-          }
-        `}
+        <style jsx>
+          {`
+            .chart-container {
+              height: 400px;
+              position: relative;
+            }
+            div {
+              position: relative;
+            }
+          `}
         </style>
       </div>
     );
@@ -163,15 +186,19 @@ class StockChart extends React.Component {
 
 StockChart.propTypes = {
   chartRange: PropTypes.string.isRequired,
-  stocks: PropTypes.arrayOf(PropTypes.shape({
-    colors: PropTypes.arrayOf(PropTypes.string),
-    data: PropTypes.arrayOf(PropTypes.shape({
-      date: PropTypes.string,
-      close: PropTypes.number,
-    })),
-    name: PropTypes.string,
-    symbol: PropTypes.string,
-  })).isRequired,
+  stocks: PropTypes.arrayOf(
+    PropTypes.shape({
+      colors: PropTypes.arrayOf(PropTypes.string),
+      data: PropTypes.arrayOf(
+        PropTypes.shape({
+          date: PropTypes.string,
+          close: PropTypes.number,
+        }),
+      ),
+      name: PropTypes.string,
+      symbol: PropTypes.string,
+    }),
+  ).isRequired,
 };
 
 export default StockChart;

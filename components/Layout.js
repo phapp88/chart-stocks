@@ -48,7 +48,9 @@ class Layout extends React.Component {
     event.preventDefault();
     const { stocks, textField } = this.state;
     const symbolToAdd = textField.toUpperCase();
-    const stockIsOnTheChart = stocks.some(stock => stock.symbol === symbolToAdd);
+    const stockIsOnTheChart = stocks.some(
+      (stock) => stock.symbol === symbolToAdd,
+    );
     if (!stockIsOnTheChart) {
       this.socket.emit('symbolToAdd', symbolToAdd);
     }
@@ -64,35 +66,41 @@ class Layout extends React.Component {
   }
 
   handleRemoval(symbol) {
-    const nextStocks = this.state.stocks.filter(stock => stock.symbol !== symbol);
+    const { stocks } = this.state;
+    const nextStocks = stocks.filter((stock) => stock.symbol !== symbol);
     this.setState({ stocks: nextStocks });
   }
 
   handleStock(stock) {
-    this.setState({ stocks: this.state.stocks.concat(stock) });
+    const { stocks } = this.state;
+    this.setState({ stocks: stocks.concat(stock) });
   }
 
   removeStock(event) {
-    const symbolToRemove = event.target.parentNode.textContent.split('-')[0].slice(0, -1);
-    const nextStocks = this.state.stocks.filter(stock => stock.symbol !== symbolToRemove);
+    const { stocks } = this.state;
+    const symbolToRemove = event.target.parentNode.textContent
+      .split('-')[0]
+      .slice(0, -1);
+    const nextStocks = stocks.filter(
+      (stock) => stock.symbol !== symbolToRemove,
+    );
     this.setState({ stocks: nextStocks });
     this.socket.emit('symbolToRemove', symbolToRemove);
   }
 
   render() {
     const { chartRange, errorMsg, stocks, textField } = this.state;
-    const stockList = stocks.map(stock => (
-      <Stock
-        key={stock.symbol}
-        removeStock={this.removeStock}
-        stock={stock}
-      />
+    const stockList = stocks.map((stock) => (
+      <Stock key={stock.symbol} removeStock={this.removeStock} stock={stock} />
     ));
 
     return (
       <main>
         <h3>STOCKS</h3>
-        <RangeSelector chartRange={chartRange} setChartRange={this.setChartRange} />
+        <RangeSelector
+          chartRange={chartRange}
+          setChartRange={this.setChartRange}
+        />
         <StockChart chartRange={chartRange} stocks={stocks} />
         <ul>{stockList}</ul>
         <StockForm
@@ -102,30 +110,31 @@ class Layout extends React.Component {
           textField={textField}
         />
         <footer>
-          Data provided for free by&nbsp;
+          Sandbox data provided for free by&nbsp;
           <a
-            href="https://iextrading.com/developer/"
+            href="https://iexcloud.io"
             rel="noopener noreferrer"
             target="_blank"
           >
-            IEX
+            IEX Cloud
           </a>
           .
         </footer>
-        <style jsx>{`
-          main {
-            margin: 20px auto;
-            max-width: 800px;
-          }
-          h3 {
-            margin-bottom: 0;
-            text-align: center;
-          }
-          footer {
-            position: relative;
-            text-align: center;
-          }
-        `}
+        <style jsx>
+          {`
+            main {
+              margin: 20px auto;
+              max-width: 800px;
+            }
+            h3 {
+              margin-bottom: 0;
+              text-align: center;
+            }
+            footer {
+              position: relative;
+              text-align: center;
+            }
+          `}
         </style>
       </main>
     );
@@ -133,14 +142,18 @@ class Layout extends React.Component {
 }
 
 Layout.propTypes = {
-  stocks: PropTypes.arrayOf(PropTypes.shape({
-    data: PropTypes.arrayOf(PropTypes.shape({
-      date: PropTypes.string,
-      close: PropTypes.number,
-    })),
-    name: PropTypes.string,
-    symbol: PropTypes.string,
-  })).isRequired,
+  stocks: PropTypes.arrayOf(
+    PropTypes.shape({
+      data: PropTypes.arrayOf(
+        PropTypes.shape({
+          date: PropTypes.string,
+          close: PropTypes.number,
+        }),
+      ),
+      name: PropTypes.string,
+      symbol: PropTypes.string,
+    }),
+  ).isRequired,
 };
 
 export default Layout;

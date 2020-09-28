@@ -10,12 +10,16 @@ const Index = ({ stocks }) => (
       <title>Chart Stocks</title>
       <meta charSet="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto" />
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Roboto"
+      />
       <link
         rel="stylesheet"
         href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       />
-      <style>{`
+      <style>
+        {`
         body {
           color: rgba(0, 0, 0, 0.87);
           font-family: Roboto, "Noto Sans", sans-serif;
@@ -41,14 +45,18 @@ Index.getInitialProps = async ({ req }) => {
 };
 
 Index.propTypes = {
-  stocks: PropTypes.arrayOf(PropTypes.shape({
-    data: PropTypes.arrayOf(PropTypes.shape({
-      date: PropTypes.string,
-      close: PropTypes.number,
-    })),
-    name: PropTypes.string,
-    symbol: PropTypes.string,
-  })).isRequired,
+  stocks: PropTypes.arrayOf(
+    PropTypes.shape({
+      data: PropTypes.arrayOf(
+        PropTypes.shape({
+          date: PropTypes.string,
+          close: PropTypes.number,
+        }),
+      ),
+      name: PropTypes.string,
+      symbol: PropTypes.string,
+    }),
+  ).isRequired,
 };
 
 export default Index;

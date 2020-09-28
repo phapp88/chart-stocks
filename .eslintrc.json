@@ -1,9 +1,13 @@
 {
-    "extends": "airbnb",
-    "rules": {
-      "no-underscore-dangle": "off",
-      "react/jsx-filename-extension": "off",
-      "no-plusplus": "off",
-      "object-curly-newline": "off"
-    }
+  "extends": "airbnb",
+  "rules": {
+    "indent": "off",
+    "no-underscore-dangle": "off",
+    "no-plusplus": "off",
+    "object-curly-newline": "off",
+    "operator-linebreak": "off",
+    "react/jsx-filename-extension": "off",
+    "react/jsx-indent": "off",
+    "react/jsx-one-expression-per-line": "off"
+  }
 }

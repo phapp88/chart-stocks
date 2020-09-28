@@ -18,7 +18,10 @@ let mongoConnection;
 
 const mongoConnect = () => {
   if (!mongoConnection) {
-    mongoConnection = mongodb.connect(process.env.MLAB, { useNewUrlParser: true });
+    mongoConnection = mongodb.connect(process.env.MLAB, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
   }
   return mongoConnection;
 };
@@ -33,21 +36,23 @@ const randomHexColor = () => {
 };
 
 async function getPriceData(stocks) {
-  const stockSymbols = stocks.map(stock => stock.symbol).join(',');
-  try {
-    const res = await fetch(`https://api.iextrading.com/1.0/stock/market/batch?symbols=${stockSymbols}&types=chart,company&range=2y&filter=close,companyName,date`);
-    const json = await res.json();
-    const stocksWithData = stocks.map((stock) => {
-      const { chart: data, company: { companyName: name } } = json[stock.symbol];
-      return { ...stock, data, name };
-    });
-    return stocksWithData;
-  } catch (err) {
-    throw err;
-  }
+  const stockSymbols = stocks.map((stock) => stock.symbol).join(',');
+  const res = await fetch(
+    `https://sandbox.iexapis.com/stable/stock/market/batch?symbols=${stockSymbols}&types=chart,company&range=2y&filter=close,companyName,date&token=${process.env.IEX_TOKEN}`,
+  );
+  const json = await res.json();
+  const stocksWithData = stocks.map((stock) => {
+    const {
+      chart: data,
+      company: { companyName: name },
+    } = json[stock.symbol];
+    return { ...stock, data, name };
+  });
+
+  return stocksWithData;
 }
 
-(async function webSocket() {
+async function webSocket() {
   const dbConnection = await mongoConnect();
   io.on('connection', (socket) => {
     socket.on('symbolToAdd', async (symbol) => {
@@ -55,7 +60,10 @@ async function getPriceData(stocks) {
         const color = randomHexColor();
         const stockWithData = await getPriceData([{ color, symbol }]);
         io.emit('stock', ...stockWithData);
-        dbConnection.db('stocks').collection('stocks').insertOne({ color, symbol });
+        dbConnection
+          .db('stocks')
+          .collection('stocks')
+          .insertOne({ color, symbol });
       } catch (err) {
         socket.emit('errorMsg', 'Symbol does not exist');
       }
@@ -66,17 +74,26 @@ async function getPriceData(stocks) {
       io.emit('stockToRemove', symbol);
     });
   });
-}());
+}
 
-const wrap = fn => (...args) => fn(...args).catch(args[2]);
+webSocket();
+
+const wrap = (fn) => (...args) => fn(...args).catch(args[2]);
 
 nextApp.prepare().then(() => {
-  app.get('/stocks', wrap(async (req, res) => {
-    const dbConnection = await mongoConnect();
-    const stocks = await dbConnection.db('stocks').collection('stocks').find().toArray();
-    const stocksWithData = await getPriceData(stocks);
-    res.send(stocksWithData);
-  }));
+  app.get(
+    '/stocks',
+    wrap(async (req, res) => {
+      const dbConnection = await mongoConnect();
+      const stocks = await dbConnection
+        .db('stocks')
+        .collection('stocks')
+        .find()
+        .toArray();
+      const stocksWithData = await getPriceData(stocks);
+      res.send(stocksWithData);
+    }),
+  );
   app.get('*', nextHandler);
   server.listen(process.env.PORT || 3000);
 });
