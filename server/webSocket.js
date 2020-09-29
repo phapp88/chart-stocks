@@ -10,8 +10,8 @@ const webSocket = async (httpServer) => {
         const color = randomHexColor();
         const stock = { color, symbol };
         const stockWithData = await getStockPriceData([stock]);
-        io.emit('stock', ...stockWithData);
         insertStock(stock);
+        io.emit('stockToAdd', ...stockWithData);
       } catch (err) {
         socket.emit('errorMsg', 'Symbol does not exist');
       }

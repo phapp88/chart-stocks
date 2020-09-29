@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Layout from '../components/Layout';
 
-const Index = ({ stocks }) => (
+const Index = ({ initialStocks }) => (
   <div>
     <Head>
       <title>Chart Stocks</title>
@@ -26,7 +26,7 @@ const Index = ({ stocks }) => (
       `}
       </style>
     </Head>
-    <Layout stocks={stocks} />
+    <Layout initialStocks={initialStocks} />
   </div>
 );
 
@@ -35,16 +35,16 @@ Index.getInitialProps = async ({ req }) => {
     const protocol = req.headers['x-forwarded-proto'] || 'http';
     const baseUrl = `${protocol}://${req.headers.host}`;
     const res = await fetch(`${baseUrl}/stocks`);
-    const stocks = await res.json();
-    return { stocks };
+    const initialStocks = await res.json();
+    return { initialStocks };
   } catch (err) {
     console.log(err);
-    return { stocks: [] };
+    return { initialStocks: [] };
   }
 };
 
 Index.propTypes = {
-  stocks: PropTypes.arrayOf(
+  initialStocks: PropTypes.arrayOf(
     PropTypes.shape({
       data: PropTypes.arrayOf(
         PropTypes.shape({
