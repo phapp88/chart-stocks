@@ -21,7 +21,7 @@ const wrap = (fn) => (...args) => fn(...args).catch(args[2]);
 
 nextApp.prepare().then(() => {
   expressApp
-    .use(helmet())
+    .use(helmet({ contentSecurityPolicy: false }))
     .get(
       '/stocks',
       wrap(async (req, res) => {
