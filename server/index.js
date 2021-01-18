@@ -25,9 +25,14 @@ nextApp.prepare().then(() => {
     .get(
       '/stocks',
       wrap(async (req, res) => {
-        const stocks = await getStocks();
-        const stocksWithData = await getStockPriceData(stocks);
-        res.send(stocksWithData);
+        try {
+          const stocks = await getStocks();
+          const stocksWithData = await getStockPriceData(stocks);
+          res.send(stocksWithData);
+        } catch (err) {
+          next(err);
+        }
+
       }),
     )
     .get('*', nextHandler);
